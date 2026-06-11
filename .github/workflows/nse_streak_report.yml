@@ -1,0 +1,32 @@
+name: NSE 3-Day Stock Movement Report
+
+on:
+  schedule:
+    # Runs Monday to Friday at 4:30 PM IST
+    # GitHub uses UTC, so 11:00 UTC = 4:30 PM IST
+    - cron: "0 11 * * 1-5"
+
+  workflow_dispatch:
+
+jobs:
+  run-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run NSE report
+        env:
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python nse_streak_report.py
